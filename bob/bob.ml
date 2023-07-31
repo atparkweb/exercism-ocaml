@@ -16,21 +16,22 @@ let remove_non_alpha str =
 
 let is_all_uppercase str =
   let str = remove_non_alpha str in
+  let is_uppercase_char c = Char.uppercase_ascii c = c && is_alpha c in
+
+  let rec check_chars idx =
+    match idx with
+    | idx when idx >= String.length str -> true
+    | _ ->
+      let current_char = str.[idx] in
+      if is_uppercase_char current_char then
+        check_chars (idx + 1)
+      else
+        false
+  in
+
   if String.length str = 0 then
     false
   else
-    let is_uppercase_char c =
-      Char.uppercase_ascii c = c && is_alpha c in
-    let rec check_chars idx =
-      if idx >= String.length str then
-        true
-      else
-        let current_char = str.[idx] in
-        if is_uppercase_char current_char then
-          check_chars (idx + 1)
-        else
-          false
-    in
     check_chars 0
 
 let is_empty str = (String.trim str |> String.length) = 0
@@ -38,7 +39,7 @@ let is_empty str = (String.trim str |> String.length) = 0
 let response_for str =
    let results = [is_empty str; is_question str; is_all_uppercase str;] in
    match results with
-   | [true; _; _]         -> "Fine. Be that way!"
+   | [true; false; false] -> "Fine. Be that way!"
    | [false; true; true]  -> "Calm down, I know what I'm doing!"
    | [false; true; false] -> "Sure."
    | [false; false; true] -> "Whoa, chill out!"
